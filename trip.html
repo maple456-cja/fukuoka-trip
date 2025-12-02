@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <title>福岡旅遊小幫手 | 粉嫩單頁 Web App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600&family=Noto+Sans+TC:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+        integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <style>
+    :root {
+      --brand-pink: #ff7dbb;
+      --brand-pink-soft: #ffe7f4;
+      --brand-sky-soft: #e6f3ff;
+    }
+    body {
+      font-family: "Noto Sans TC", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at 0% 0%, #ffe9f4 0, transparent 45%),
+                  radial-gradient(circle at 100% 10%, #e3f3ff 0, transparent 45%),
+                  radial-gradient(circle at 50% 100%, #ffe9ff 0, transparent 55%),
+                  #fff6fb;
+    }
+    .baloo {
+      font-family: "Baloo 2", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    .snow-layer::before,
+    .snow-layer::after {
+      content: "❄ ❄ ❄ ❄ ❄";
+      position: fixed;
+      left: 5%;
+      right: 5%;
+      top: 5%;
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 1.1rem;
+      letter-spacing: 3rem;
+      pointer-events: none;
+      animation: snowFloat 18s linear infinite;
+    }
+    .snow-layer::after {
+      top: auto;
+      bottom: 10%;
+      left: 10%;
+      opacity: 0.7;
+      animation-duration: 22s;
+      animation-direction: reverse;
+    }
+    @keyframes snowFloat {
+      0% { transform: translateY(-10px); }
+      50% { transform: translateY(10px); }
+      100% { transform: translateY(-10px); }
+    }
+    .shadow-soft-card {
+      box-shadow: 0 18px 40px rgba(145, 158, 171, 0.22);
+    }
+    .scrollbar-thin::-webkit-scrollbar {
+      height: 4px;
+      width: 4px;
+    }
+    .scrollbar-thin::-webkit-scrollbar-thumb {
+      background-color: rgba(148, 163, 184, 0.5);
+      border-radius: 999px;
+    }
+  </style>
+</head>
+<body class="snow-layer min-h-screen flex flex-col text-slate-800">
+
+  <!-- App container -->
+  <div class="flex-1 flex flex-col max-w-4xl mx-auto w-full px-3 sm:px-4 pb-24 pt-4 sm:pt-6">
+
+    <!-- Header -->
+    <header class="mb-4 sm:mb-6">
+      <div class="bg-white/80 backdrop-blur rounded-3xl shadow-soft-card px-4 sm:px-6 py-4 flex items-center gap-3">
+        <div class="flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-br from-pink-300 to-pink-400 text-white shadow-lg">
+          <i class="fa-solid fa-plane-arrival text-xl"></i>
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2">
+            <h1 class="baloo text-lg sm:text-xl font-semibold text-slate-800 truncate">福岡旅遊小幫手</h1>
+            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[0.7rem] bg-pink-100 text-pink-600 border border-pink-200">
+              <i class="fa-solid fa-snowflake mr-1 text-[0.7rem]"></i>Winter Trip
+            </span>
+          </div>
+          <p class="text-[0.75rem] sm:text-xs text-slate-500 mt-0.5">
+            粉嫩可愛風旅遊計畫 · 行程與記帳皆儲存在瀏覽器 LocalStorage
+          </p>
+        </div>
+        <div class="hidden sm:flex flex-col items-end text-xs text-right text-slate-500">
+          <span class="font-semibold text-pink-500">Fukuoka 5D4N</span>
+          <span>模式：單頁離線小工具</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Sub header message -->
+    <section class="mb-3 sm:mb-4">
+      <div class="bg-gradient-to-r from-pink-50 to-sky-50 border border-pink-100/60 rounded-3xl px-4 sm:px-5 py-3 flex items-start gap-3 shadow-soft-card">
+        <div class="mt-0.5 text-pink-400">
+          <i class="fa-solid fa-wand-magic-sparkles"></i>
+        </div>
+        <div class="flex-1">
+          <p class="text-xs sm:text-[0.8rem] text-slate-600 leading-relaxed">
+            這個小小 Web App 會幫你記住：
+            <span class="font-semibold text-pink-500">行程、景點導覽、旅費記帳、行前準備清單與重要資訊</span>。
+            所有資料都只存在你的裝置中，重新整理網頁也不會消失。
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main tabs content -->
+    <main class="flex-1 flex flex-col gap-4 sm:gap-5 overflow-x-hidden">
+
+      <!-- PLAN TAB -->
+      <section id="tab-plan" data-tab-content class="flex-1 flex flex-col">
+        <div class="bg-white/80 backdrop-blur rounded-3xl shadow-soft-card px-4 sm:px-6 py-4 mb-3">
+          <div class="flex items-center justify-between gap-2 mb-2">
+            <div class="flex items-center gap-2">
+              <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-pink-100 text-pink-500 text-xs">
+                <i class="fa-solid fa-calendar-day"></i>
+              </span>
+              <div>
+                <h2 class="text-sm sm:text-base font-semibold text-slate-800">行程總覽 · PLAN</h2>
+                <p class="text-[0.7rem] text-slate-500">以下是 5 天 4 夜福岡旅程的時間軸整理，可快速檢視每一天的移動與停留。</p>
+              </div>
+            </div>
+          </div>
+          <p class="text-[0.7rem] text-slate-500">
+            小提示：帶有
+            <span class="inline-flex items-center px-1.5 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-100 text-[0.65rem] mx-1"><i class="fa-solid fa-exclamation-circle mr-1"></i>黃色標示</span>
+            的交通為較重要時段（如自訂交通／搭車時間），記得提早集合。
+          </p>
+        </div>
+
+        <div id="plan-container" class="flex-1 flex flex-col gap-4 pb-4 overflow-y-auto scrollbar-thin">
+          <!-- 由 JS 動態產生 -->
+        </div>
+      </section>
+
+      <!-- GUIDE TAB -->
+      <section id="tab-guide" data-tab-content class="flex-1 flex-col hidden">
+        <div class="bg-white/80 backdrop-blur rounded-3xl shadow-soft-card px-4 sm:px-6 py-4 mb-3">
+          <div class="flex items-center gap-2">
+            <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-sky-100 text-sky-500 text-xs">
+              <i class="fa-solid fa-book-open"></i>
+            </span>
+            <div>
+              <h2 class="text-sm sm:text-base font-semibold text-slate-800">深度導覽 · GUIDE</h2>
+              <p class="text-[0.7rem] text-slate-500">像旅遊小冊子一樣的排版，整理這趟旅程中的重點景點與小知識。</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex-1 flex flex-col gap-4 pb-4 overflow-y-auto scrollbar-thin">
+
+          <!-- 太宰府天滿宮 -->
+          <article class="bg-white/90 backdrop-blur rounded-3xl shadow-soft-card p-4 sm:p-5">
+            <header class="flex items-start justify-between gap-3 mb-2">
+              <div>
+                <h3 class="text-base sm:text-lg font-semibold text-slate-800 mb-1">
+                  太宰府天滿宮 · 學問之神與梅花庭園
+                </h3>
+                <p class="text-[0.7rem] text-slate-500">
+                  日本全國約有一萬兩千間天滿宮，太宰府天滿宮是其中最重要的一座，本殿供奉被尊為「學問之神」的菅原道真。
+                </p>
+              </div>
+              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[0.65rem] bg-pink-50 text-pink-500 border border-pink-100">
+                <i class="fa-solid fa-shrine mr-1"></i>文化景點
+              </span>
+            </header>
+            <div class="grid gap-3 sm:grid-cols-3 sm:gap-4 mt-2">
+              <div class="sm:col-span-2 text-[0.75rem] leading-relaxed text-slate-700 space-y-2">
+                <p>
+                  參道兩側聚集了梅枝餅、茶屋與伴手禮店，是體驗傳統門前町氛圍的好地方。穿過鳥居與石橋後，可見以梅花與池水構成的庭園景觀，
+                  春季梅花盛開時，是當地學生祈求考試順利的熱門時間。
+                </p>
+                <p>
+                  參拜方式與一般神社相同：先於淨手亭清洗雙手、漱口，再至賽錢箱前投幣、鞠躬、拍手與祈願。若有抽到御神籤，吉籤可帶回，
+                  凶籤則多會綁在境內樹枝或繩上，象徵將厄運留在神社。
+                </p>
+                <p class="text-slate-500">
+                  小提醒：境內多為石板路，雨天容易濕滑，建議穿著防滑好走的鞋子。
+                </p>
+              </div>
+              <div class="sm:col-span-1 space-y-2">
+                <div class="rounded-2xl bg-sky-50 border border-sky-100 p-3 text-[0.7rem] text-slate-700">
+                  <p class="font-semibold mb-1 text-slate-800">參觀重點建議</p>
+                  <ul class="list-disc list-inside space-y-1">
+                    <li>體驗「御朱印」或學業相關御守。</li>
+                    <li>品嚐有名的「梅枝餅」。</li>
+                    <li>保留時間給參道小店與茶屋。</li>
+                  </ul>
+                </div>
+                <a href="https://www.google.com/maps/search/?api=1&query=%E5%A4%AA%E5%AE%B0%E5%BA%9C%E5%A4%A9%E6%BB%85%E5%AE%AE"
+                   target="_blank"
+                   class="block w-full text-center text-[0.75rem] mt-2 px-3 py-2 rounded-full bg-pink-100 text-pink-600 hover:bg-pink-200 transition border border-pink-200">
+                  <i class="fa-solid fa-location-dot mr-1"></i>在 Google Maps 查看位置
+                </a>
+              </div>
+            </div>
+          </article>
+
+          <!-- 湯布院花卉村 -->
+          <article class="bg-white/90 backdrop-blur rounded-3xl shadow-soft-card p-4 sm:p-5">
+            <header class="flex items-start justify-between gap-3 mb-2">
+              <div>
+                <h3 class="text-base sm:text-lg font-semibold text-slate-800 mb-1">
+                  湯布院花卉村 · 童話般的小鎮散步
+                </h3>
+                <p class="text-[0.7rem] text-slate-500">
+                  以英國科茲窩老街為靈感打造的主題小村，結合可愛商店、咖啡館與拍照景點，非常適合慢慢散步與拍照。
+                </p>
+              </div>
+              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[0.65rem] bg-yellow-50 text-yellow-600 border border-yellow-100">
+                <i class="fa-solid fa-camera-retro mr-1"></i>散步拍照
+              </span>
+            </header>
+            <div class="grid gap-3 sm:grid-cols-3 sm:gap-4 mt-2">
+              <div class="sm:col-span-2 text-[0.75rem] leading-relaxed text-slate-700 space-y-2">
+                <p>
+                  花卉村的建築以暖色石牆與尖頂屋為主，搭配貓頭鷹、貓咪、童話主題等小店，營造出類似童話場景的氛圍。
+                  村內多為平緩步道，安排 2～3 小時可以悠閒逛完。
+                </p>
+                <p>
+                  建議預留一些時間給周邊湯布院地區，可搭配金鱗湖、街道商店與甜點店一起規劃，形成半日或一日小旅行。
+                </p>
+              </div>
+              <div class="sm:col-span-1 space-y-2">
+                <iframe
+                  class="w-full h-40 sm:h-44 rounded-2xl border border-sky-100"
+                  src="https://www.openstreetmap.org/export/embed.html?bbox=131.360%2C33.260%2C131.380%2C33.280&layer=mapnik&marker=33.27%2C131.37"
+                  style="border:0"
+                  loading="lazy">
+                </iframe>
+                <p class="mt-1 text-[0.65rem] text-slate-500">
+                  地圖範圍為湯布院周邊，僅供大致方位參考；實際路線以現場資訊為準。
+                </p>
+              </div>
+            </div>
+          </article>
+
+          <!-- 博多周邊購物與美食 -->
+          <article class="bg-white/90 backdrop-blur rounded-3xl shadow-soft-card p-4 sm:p-5">
+            <header class="flex items-start justify-between gap-3 mb-2">
+              <div>
+                <h3 class="text-base sm:text-lg font-semibold text-slate-800 mb-1">
+                  博多站周邊 · 逛街、美食與藥妝一次搞定
+                </h3>
+                <p class="text-[0.7rem] text-slate-500">
+                  博多站一帶集合了 KITTE、Hakata DEITOS、博多一番街與藥妝電器等設施，是行程中採買與用餐的核心區域。
+                </p>
+              </div>
+              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[0.65rem] bg-sky-50 text-sky-600 border border-sky-100">
+                <i class="fa-solid fa-store mr-1"></i>購物 & 餐飲
+              </span>
+            </header>
+            <div class="text-[0.75rem] leading-relaxed text-slate-700 space-y-2">
+              <p>
+                <span class="font-semibold">Hakata DEITOS / DEITOS ANNEX：</span>
+                集合拉麵、地方料理與甜點的商業設施，非常適合當作車站附近的用餐據點。
+              </p>
+              <p>
+                <span class="font-semibold">博多一番街：</span>
+                匯集博多拉麵與在地名店的地下街區域，用餐尖峰時段容易排隊，可預留彈性時間。
+              </p>
+              <p>
+                <span class="font-semibold">藥妝與超市：</span>
+                如大國藥妝、LOPIA 超市與 Sunny 等，可安排在晚間回飯店前採買零食與日用品。
+              </p>
+            </div>
+          </article>
+
+        </div>
+      </section>
+
+      <!-- WALLET TAB -->
+      <section id="tab-wallet" data-tab-content class="flex-1 flex-col hidden">
+        <div class="bg-white/80 backdrop-blur rounded-3xl shadow-soft-card px-4 sm:px-6 py-4 mb-3">
+          <div class="flex items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+              <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-emerald-100 text-emerald-500 text-xs">
+                <i class="fa-solid fa-wallet"></i>
+              </span>
+              <div>
+                <h2 class="text-sm sm:text-base font-semibold text-slate-800">記帳與匯率 · WALLET</h2>
+                <p class="text-[0.7rem] text-slate-500">可輸入算式、換算日圓與台幣，並搭配照片紀錄每一筆消費。</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex-1 flex flex-col gap-4 overflow-y-auto pb-4 scrollbar-thin">
+
+          <!-- 匯率與計算機 -->
+          <section class="bg-white/90 backdrop-blur rounded-3xl shadow-soft-card p-4 sm:p-5">
+            <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
+              <div class="flex-1">
+                <label class="block text-[0.75rem] text-slate-600 mb-1">匯率：1 日圓 = 幾元台幣？</label>
+                <div class="flex items-center gap-2">
+                  <input id="wallet-rate" type="number" step="0.0001"
+                         class="w-32 px-3 py-1.5 rounded-full border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-pink-200 focus:border-pink-300"
+                         placeholder="例如 0.22" />
+                  <span class="text-[0.75rem] text-slate-500">（可自行輸入當天實際匯率）</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-4 border-t border-slate-100 pt-3">
+              <label class="block text-[0.75rem] text-slate-600 mb-1">日圓計算機（可輸入算式，如：500+200*3）</label>
+              <div class="flex flex-col sm:flex-row gap-2 sm:items-center">
+                <input id="calc-input" type="text"
+                       class="flex-1 px-3 py-1.5 rounded-full border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-pink-200 focus:border-pink-300"
+                       placeholder="輸入日圓算式…" />
+                <button id="calc-btn"
+                        class="inline-flex items-center justify-center px-4 py-1.5 rounded-full bg-pink-500 text-white text-sm font-semibold shadow-md hover:bg-pink-600">
+                  <i class="fa-solid fa-equals mr-1"></i>計算
+                </button>
+              </div>
+              <p id="calc-result" class="mt-2 text-[0.75rem] text-slate-600"></p>
+            </div>
+          </section>
+
+          <!-- 記帳表單 -->
+          <section class="bg-white/90 backdrop-blur rounded-3xl shadow-soft-card p-4 sm:p-5">
+            <form id="wallet-form" class="grid sm:grid-cols-3 gap-3 sm:gap-4 items-end">
+              <div class="sm:col-span-1">
+                <label class="block text-[0.75rem] text-slate-600 mb-1">品項名稱</label>
+                <input id="wallet-item" type="text"
+                       class="w-full px-3 py-1.5 rounded-full border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-pink-200 focus:border-pink-300"
+                       placeholder="例：午餐拉麵、伴手禮…" />
+              </div>
+              <div class="sm:col-span-1">
+                <label class="block text-[0.75rem] text-slate-600 mb-1">金額（日圓）</label>
+                <input id="wallet-amount" type="number" min="0"
+                       class="w-full px-3 py-1.5 rounded-full border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-pink-200 focus:border-pink-300"
+                       placeholder="例：1200" />
+              </div>
+              <div class="sm:col-span-1">
+                <label class="block text-[0.75rem] text-slate-600 mb-1">收據／餐點照片（可選）</label>
+                <div class="flex items-center gap-2">
+                  <label class="inline-flex items-center px-3 py-1.5 rounded-full bg-sky-50 text-sky-600 text-[0.75rem] border border-sky-100 cursor-pointer hover:bg-sky-100">
+                    <i class="fa-solid fa-camera mr-1"></i>選擇照片
+                    <input id="wallet-photo" type="file" accept="image/*" class="hidden" />
+                  </label>
+                  <span id="wallet-photo-name" class="text-[0.7rem] text-slate-400 truncate max-w-[8rem]"></span>
+                </div>
+              </div>
+              <div class="sm:col-span-3 flex justify-end">
+                <button type="submit"
+                        class="inline-flex items-center px-4 py-1.5 rounded-full bg-emerald-500 text-white text-sm font-semibold shadow-md hover:bg-emerald-600">
+                  <i class="fa-solid fa-plus mr-1"></i>新增一筆記帳
+                </button>
+              </div>
+            </form>
+          </section>
+
+          <!-- 記帳列表 -->
+          <section class="bg-white/90 backdrop-blur rounded-3xl shadow-soft-card p-4 sm:p-5">
+            <div class="flex items-center justify-between gap-2 mb-2">
+              <h3 class="text-sm font-semibold text-slate-800 flex items-center gap-2">
+                <i class="fa-solid fa-list-ul text-pink-400"></i> 記帳歷史
+              </h3>
+              <button id="wallet-clear-btn"
+                      class="text-[0.7rem] text-slate-400 hover:text-red-500 flex items-center gap-1">
+                <i class="fa-solid fa-trash-can"></i> 清空全部
+              </button>
+            </div>
+            <div id="wallet-list" class="space-y-2 text-[0.75rem] text-slate-700">
+              <!-- JS render -->
+            </div>
+            <p id="wallet-summary" class="mt-3 text-[0.75rem] text-slate-600"></p>
+          </section>
+        </div>
+      </section>
+
+      <!-- LISTS TAB -->
+      <section id="tab-lists" data-tab-content class="flex-1 flex-col hidden">
+        <div class="bg-white/80 backdrop-blur rounded-3xl shadow-soft-card px-4 sm:px-6 py-4 mb-3">
+          <div class="flex items-center gap-2">
+            <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-violet-100 text-violet-500 text-xs">
+              <i class="fa-solid fa-clipboard-list"></i>
+            </span>
+            <div>
+              <h2 class="text-sm sm:text-base font-semibold text-slate-800">行前清單與備忘 · LISTS</h2>
+              <p class="text-[0.7rem] text-slate-500">出發前確認必備品，也可以留下臨時想到的小提醒、網址或店家資訊。</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex-1 grid gap-4 sm:grid-cols-2 pb-4 overflow-y-auto scrollbar-thin">
+
+          <!-- CheckList -->
+          <section class="bg-white/90 backdrop-blur rounded-3xl shadow-soft-card p-4 sm:p-5 flex flex-col">
+            <h3 class="text-sm font-semibold text-slate-800 mb-2 flex items-center gap-2">
+              <i class="fa-solid fa-check-square text-pink-400"></i> 行前準備 CheckList
+            </h3>
+            <div id="checklist-container" class="space-y-2 text-[0.8rem] text-slate-700">
+              <!-- JS render -->
+            </div>
+          </section>
+
+          <!-- Memo -->
+          <section class="bg-white/90 backdrop-blur rounded-3xl shadow-soft-card p-4 sm:p-5 flex flex-col">
+            <h3 class="text-sm font-semibold text-slate-800 mb-2 flex items-center gap-2">
+              <i class="fa-solid fa-pen-clip text-sky-400"></i> 個人備忘錄
+            </h3>
+            <textarea id="memo-input" rows="5"
+                      class="w-full text-[0.8rem] px-3 py-2 rounded-2xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-pink-200 focus:border-pink-300 resize-none"
+                      placeholder="可自由輸入備忘事項；如果輸入網址（如 https://...），會在下方自動變成可點擊按鈕。"></textarea>
+            <div class="mt-3 border-t border-slate-100 pt-3">
+              <p class="text-[0.7rem] text-slate-500 mb-1">預覽：</p>
+              <div id="memo-preview" class="text-[0.8rem] leading-relaxed text-slate-700 space-y-1">
+                <!-- JS render -->
+              </div>
+            </div>
+          </section>
+
+        </div>
+      </section>
+
+      <!-- INFO TAB -->
+      <section id="tab-info" data-tab-content class="flex-1 flex-col hidden">
+        <div class="bg-white/80 backdrop-blur rounded-3xl shadow-soft-card px-4 sm:px-6 py-4 mb-3">
+          <div class="flex items-center gap-2">
+            <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-sky-100 text-sky-500 text-xs">
+              <i class="fa-solid fa-circle-info"></i>
+            </span>
+            <div>
+              <h2 class="text-sm sm:text-base font-semibold text-slate-800">重要資訊 · INFO</h2>
+              <p class="text-[0.7rem] text-slate-500">天氣、緊急聯絡與出入境注意事項集中在這裡，出發前與旅程中都可快速查閱。</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex-1 grid gap-4 sm:grid-cols-2 pb-4 overflow-y-auto scrollbar-thin">
+
+          <!-- Weather -->
+          <section class="bg-white/90 backdrop-blur rounded-3xl shadow-soft-card p-4 sm:p-5">
+            <h3 class="text-sm font-semibold text-slate-800 mb-2 flex items-center gap-2">
+              <i class="fa-solid fa-cloud-sun-rain text-sky-400"></i> 天氣與交通資訊
+            </h3>
+            <ul class="text-[0.8rem] text-slate-700 space-y-2">
+              <li>
+                <span class="font-semibold">日本氣象廳 · 福岡周邊預報：</span><br />
+                <a href="https://www.jma.go.jp/bosai/forecast/" target="_blank"
+                   class="inline-flex items-center mt-0.5 px-3 py-1 rounded-full bg-sky-50 text-sky-600 border border-sky-100 text-[0.75rem] hover:bg-sky-100">
+                  <i class="fa-solid fa-arrow-up-right-from-square mr-1"></i> 開啟官方天氣預報頁面
+                </a>
+              </li>
+              <li>
+                <span class="font-semibold">福岡機場資訊：</span><br />
+                <a href="https://www.fukuoka-airport.jp/" target="_blank"
+                   class="inline-flex items-center mt-0.5 px-3 py-1 rounded-full bg-pink-50 text-pink-600 border border-pink-100 text-[0.75rem] hover:bg-pink-100">
+                  <i class="fa-solid fa-plane-departure mr-1"></i> 福岡機場官方網站
+                </a>
+              </li>
+            </ul>
+          </section>
+
+          <!-- Emergency -->
+          <section class="bg-white/90 backdrop-blur rounded-3xl shadow-soft-card p-4 sm:p-5">
+            <h3 class="text-sm font-semibold text-slate-800 mb-2 flex items-center gap-2">
+              <i class="fa-solid fa-phone-volume text-red-400"></i> 緊急聯絡方式
+            </h3>
+            <ul class="text-[0.8rem] text-slate-700 space-y-2">
+              <li><span class="font-semibold">日本警察：</span>110</li>
+              <li><span class="font-semibold">火災／救護車：</span>119</li>
+              <li>
+                <span class="font-semibold">信用卡／金融卡掛失：</span><br />
+                建議將自己的發卡銀行國際客服電話寫在護照或備忘錄中，方便緊急時聯絡。
+              </li>
+              <li>
+                <span class="font-semibold">在日台灣相關協助：</span><br />
+                出發前可將駐日代表處與福岡辦事處的聯絡資訊寫入「備忘錄」分頁，遇到護照遺失等狀況時較容易查詢。
+              </li>
+            </ul>
+          </section>
+
+          <!--注意事項-->
+          <section class="bg-white/90 backdrop-blur rounded-3xl shadow-soft-card p-4 sm:p-5 sm:col-span-2">
+            <h3 class="text-sm font-semibold text-slate-800 mb-2 flex items-center gap-2">
+              <i class="fa-solid fa-triangle-exclamation text-amber-500"></i> 旅遊注意事項與小提醒
+            </h3>
+            <ul class="text-[0.8rem] text-slate-700 space-y-2 list-disc list-inside">
+              <li>液體、噴霧與刀具等物品進出機場需符合航空公司與日本海關規定，行前請再次確認最新規範。</li>
+              <li>日本多數公共空間嚴禁吸菸，僅能在指定吸菸區使用；違規可能受罰。</li>
+              <li>搭乘大眾運輸時請保持安靜，手機多半要切震動或靜音，並避免大聲講電話。</li>
+              <li>便利商店或超市常備簡單日用品與食物，可善用作為宵夜與補給點。</li>
+              <li>若使用現金為主，可在記帳分頁隨手記錄，每天回飯店前快速整理當日支出。</li>
+            </ul>
+          </section>
+
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Bottom Nav -->
+  <nav class="fixed bottom-0 inset-x-0 z-20 bg-white/90 backdrop-blur border-t border-slate-100">
+    <div class="max-w-4xl mx-auto px-4">
+      <div class="grid grid-cols-4 gap-2 py-2 text-[0.63rem] sm:text-[0.7rem] font-semibold text-slate-400">
+        <button data-tab-target="plan"
+                class="tab-btn flex flex-col items-center justify-center py-1 rounded-3xl transition-all text-pink-500 bg-pink-50 shadow-soft-card">
+          <i class="fa-solid fa-route text-sm mb-0.5"></i>
+          <span>行程</span>
+        </button>
+        <button data-tab-target="guide"
+                class="tab-btn flex flex-col items-center justify-center py-1 rounded-3xl transition-all">
+          <i class="fa-solid fa-book-open text-sm mb-0.5"></i>
+          <span>導覽</span>
+        </button>
+        <button data-tab-target="wallet"
+                class="tab-btn flex flex-col items-center justify-center py-1 rounded-3xl transition-all">
+          <i class="fa-solid fa-wallet text-sm mb-0.5"></i>
+          <span>記帳</span>
+        </button>
+        <button data-tab-target="lists"
+                class="tab-btn flex flex-col items-center justify-center py-1 rounded-3xl transition-all">
+          <i class="fa-solid fa-clipboard-list text-sm mb-0.5"></i>
+          <span>清單</span>
+        </button>
+      </div>
+      <div class="flex justify-center pb-2">
+        <button data-tab-target="info"
+                class="tab-btn inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-[0.65rem] font-semibold bg-sky-100 text-slate-600 border border-sky-200">
+          <i class="fa-solid fa-circle-info text-[0.7rem]"></i>
+          <span>資訊</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- DATA & SCRIPT -->
+  <script>
+    // ====== 行程資料 ======
+    const tripDays = [
+      {
+        day: 1,
+        title: "抵達福岡 & 入住",
+        note: "福岡 → 博多 → 東急STAY博多",
+        segments: [
+          {
+            type: "activity",
+            time: "18:55",
+            title: "福岡國際機場",
+            note: "18:55 到達福岡國際機場，19:30 離開前往博多",
+            mapQuery: "福岡國際機場",
+          },
+          {
+            type: "transfer",
+            text: "搭公車約 21 分鐘"
+          },
+          {
+            type: "activity",
+            time: "19:51",
+            title: "博多站",
+            note: "19:51 抵達博多站，停留約 30 分鐘",
+            mapQuery: "博多站"
+          },
+          {
+            type: "transfer",
+            text: "步行約 7 分鐘"
+          },
+          {
+            type: "activity",
+            time: "20:28",
+            title: "博多STAY博多（短暫停留）",
+            note: "20:28 抵達博多STAY博多，停留約 40 分鐘",
+            mapQuery: "STAY 博多"
+          },
+          {
+            type: "transfer",
+            text: "步行約 7 分鐘"
+          },
+          {
+            type: "activity",
+            time: "21:15",
+            title: "Sunny Hakata Sumiyoshi Store",
+            note: "21:15 抵達超市採買，停留約 1 小時",
+            mapQuery: "Sunny Hakata Sumiyoshi Store"
+          },
+          {
+            type: "transfer",
+            text: "步行約 7 分鐘"
+          },
+          {
+            type: "activity",
+            time: "22:22",
+            title: "東急STAY博多（入住）",
+            note: "22:22 抵達東急STAY博多，入住休息",
+            mapQuery: "東急STAY博多",
+            isHotel: true
+          }
+        ]
+      },
+      {
+        day: 2,
+        title: "太宰府 & 湯布院一日遊",
+        note: "東急STAY博多 → 太宰府 → 湯布院 → 博多",
+        segments: [
+          { type: "activity", time: "08:00", title: "東急STAY博多", note: "08:00 離開飯店出發", mapQuery: "東急STAY博多" },
+          { type: "transfer", text: "步行約 10 分鐘" },
+          { type: "activity", time: "08:30", title: "博多站筑紫口", note: "08:30 抵達博多站筑紫口", mapQuery: "博多站 筑紫口" },
+          { type: "transfer", text: "搭火車約 33 分鐘" },
+          { type: "activity", time: "09:10", title: "太宰府天滿宮", note: "停留約 1 小時 30 分鐘，參拜學問之神與參道散步", mapQuery: "太宰府天滿宮", isSpot: true },
+          { type: "transfer", text: "自訂交通約 120 分鐘" },
+          { type: "activity", time: "12:40", title: "近鐵別府空中纜車", note: "停留約 1 小時，可俯瞰別府風景", mapQuery: "近鐵別府空中纜車", isSpot: true },
+          { type: "transfer", text: "自訂交通約 30 分鐘" },
+          { type: "activity", time: "14:10", title: "湯布院花卉村", note: "14:10 抵達湯布院花卉村，預計 17:00 離開", mapQuery: "湯布院花卉村", isSpot: true },
+          { type: "transfer", text: "搭火車約 97 分鐘" },
+          { type: "activity", time: "18:37", title: "博多站筑紫口", note: "18:37 抵達，停留約 10 分鐘", mapQuery: "博多站 筑紫口" },
+          { type: "transfer", text: "步行約 12 分鐘" },
+          { type: "activity", time: "18:59", title: "水炊料亭 博多華味鳥 博多站前店", note: "18:59 抵達，預計用餐約 1 小時", mapQuery: "水炊料亭 博多華味鳥 博多站前店", isFood: true },
+          { type: "transfer", text: "步行約 12 分鐘" },
+          { type: "activity", time: "20:11", title: "大國藥妝 博多筑紫口店", note: "採買藥妝與生活用品", mapQuery: "大國藥妝 博多筑紫口店" },
+          { type: "transfer", text: "步行約 10 分鐘" },
+          { type: "activity", time: "21:21", title: "東急STAY博多", note: "返回飯店休息", mapQuery: "東急STAY博多", isHotel: true }
+        ]
+      },
+      {
+        day: 3,
+        title: "博多市區美食與購物",
+        note: "一蘭總本店、櫛田神社、博多運河城等",
+        segments: [
+          { type: "activity", time: "08:00", title: "東急STAY博多", note: "08:00 離開飯店", mapQuery: "東急STAY博多" },
+          { type: "transfer", text: "搭公車約 14 分鐘" },
+          { type: "activity", time: "08:14", title: "一蘭本社總本店", note: "停留約 1 小時，體驗一蘭拉麵總本店", mapQuery: "ICHIRAN Original Shop and Headquaters", isFood: true },
+          { type: "transfer", text: "步行約 10 分鐘" },
+          { type: "activity", time: "09:24", title: "櫛田神社", note: "停留約 45 分鐘，可參觀博多祇園山笠相關展示", mapQuery: "櫛田神社", isSpot: true },
+          { type: "transfer", text: "步行約 8 分鐘" },
+          { type: "activity", time: "10:17", title: "唐吉軻德 中洲店", note: "停留約 1 小時 30 分鐘，採買零食和日用品", mapQuery: "唐吉軻德 中洲店" },
+          { type: "transfer", text: "步行約 4 分鐘" },
+          { type: "activity", time: "11:51", title: "川端通商店街", note: "停留約 2 小時，商店街散步與午餐", mapQuery: "川端通商店街" },
+          { type: "transfer", text: "步行約 8 分鐘" },
+          { type: "activity", time: "13:59", title: "博多運河城", note: "停留約 3 小時，可購物與欣賞噴泉表演", mapQuery: "Canal City Hakata", isSpot: true },
+          { type: "transfer", text: "步行約 5 分鐘" },
+          { type: "activity", time: "17:04", title: "Fuk Coffee", note: "停留約 1 小時，咖啡小憩", mapQuery: "Fuk Coffee 博多" },
+          { type: "transfer", text: "步行約 13 分鐘" },
+          { type: "activity", time: "18:17", title: "博多の海鮮料理 喜水丸 博多一番街店", note: "預計用餐約 2 小時", mapQuery: "博多の海鮮料理 喜水丸 博多一番街店", isFood: true },
+          { type: "transfer", text: "步行約 6 分鐘" },
+          { type: "activity", time: "20:23", title: "LOPIA 博多友都八喜店", note: "20:23 抵達，購買超市商品，約 21:00 離開", mapQuery: "LOPIA 博多友都八喜店" },
+          { type: "transfer", text: "步行約 5 分鐘" },
+          { type: "activity", time: "21:05", title: "東急STAY博多", note: "回飯店整理戰利品與休息", mapQuery: "東急STAY博多", isHotel: true }
+        ]
+      },
+      {
+        day: 4,
+        title: "天神一帶早午餐與逛街",
+        note: "Pain Stock、福岡PARCO、天神地下街等",
+        segments: [
+          { type: "activity", time: "08:00", title: "東急STAY博多", note: "08:00 離開飯店", mapQuery: "東急STAY博多" },
+          { type: "transfer", text: "搭公車約 15 分鐘" },
+          { type: "activity", time: "08:15", title: "Pain Stock 天神店", note: "停留約 1 小時 30 分鐘，人氣麵包店", mapQuery: "Pain Stock 天神店", isFood: true },
+          { type: "transfer", text: "步行約 9 分鐘" },
+          { type: "activity", time: "09:54", title: "福岡PARCO", note: "逛街至 11:00，再前往牛腸鍋餐廳", mapQuery: "福岡PARCO", isSpot: true },
+          { type: "transfer", text: "步行 0 分鐘（同一棟）" },
+          { type: "activity", time: "11:00", title: "博多牛腸鍋大山 福岡PARCO店", note: "品嚐牛腸鍋午餐", mapQuery: "博多牛腸鍋大山 福岡PARCO店", isFood: true },
+          { type: "transfer", text: "步行 0 分鐘" },
+          { type: "activity", time: "12:30", title: "福岡PARCO（再逛一輪）", note: "12:30 再次逛 PARCO 約 1 小時", mapQuery: "福岡PARCO" },
+          { type: "transfer", text: "步行約 3 分鐘" },
+          { type: "activity", time: "13:33", title: "天神地下街", note: "停留約 2 小時，購物與點心", mapQuery: "天神地下街" },
+          { type: "transfer", text: "步行約 5 分鐘" },
+          { type: "activity", time: "15:38", title: "Mina 天神", note: "停留約 2 小時 30 分鐘", mapQuery: "Mina 天神" },
+          { type: "transfer", text: "搭公車約 17 分鐘" },
+          { type: "activity", time: "18:25", title: "東急STAY博多", note: "短暫回飯店休息約 15 分鐘", mapQuery: "東急STAY博多", isHotel: true },
+          { type: "transfer", text: "步行約 13 分鐘" },
+          { type: "activity", time: "18:53", title: "牛豚馬鶏", note: "停留約 1 小時，居酒屋晚餐", mapQuery: "牛豚馬鶏 博多", isFood: true },
+          { type: "transfer", text: "步行約 7 分鐘" },
+          { type: "activity", time: "20:00", title: "Hakata DEITOS ANNEX", note: "停留約 1 小時 30 分鐘，可繼續採買伴手禮", mapQuery: "Hakata DEITOS ANNEX" },
+          { type: "transfer", text: "步行約 10 分鐘" },
+          { type: "activity", time: "21:40", title: "博多STAY博多", note: "回住宿點休息", mapQuery: "STAY 博多" }
+        ]
+      },
+      {
+        day: 5,
+        title: "最後採買 & 返回機場",
+        note: "博多一番街 → KITTE → 機場",
+        segments: [
+          { type: "activity", time: "08:00", title: "東急STAY博多", note: "08:00 離開飯店，準備前往博多站一帶", mapQuery: "東急STAY博多" },
+          { type: "transfer", text: "步行約 10 分鐘" },
+          { type: "activity", time: "08:40", title: "TANYA博多 博多一番街店", note: "停留約 1 小時，可以享用牛舌早餐", mapQuery: "TANYA博多 博多一番街店", isFood: true },
+          { type: "transfer", text: "步行約 5 分鐘" },
+          { type: "activity", time: "09:45", title: "KITTE 博多購物中心", note: "停留約 2 小時，最後採買服飾或伴手禮", mapQuery: "KITTE 博多" },
+          { type: "transfer", text: "步行約 4 分鐘" },
+          { type: "activity", time: "11:49", title: "博多站地下街", note: "停留約 2 小時，享受地下街最後巡禮", mapQuery: "博多站 地下街" },
+          { type: "transfer", text: "步行約 5 分鐘" },
+          { type: "activity", time: "13:54", title: "Hakata DEITOS ANNEX", note: "13:54 抵達，停留約 1 小時，完成最終採買", mapQuery: "Hakata DEITOS ANNEX" },
+          { type: "transfer", text: "搭車約 13 分鐘（前往機場）" },
+          { type: "activity", time: "15:07", title: "福岡國際機場", note: "15:07 抵達機場，辦理登機與回程準備", mapQuery: "福岡國際機場", isAirport: true }
+        ]
+      }
+    ];
+
+    // ===== Tabs =====
+    function setupTabs() {
+      const tabButtons = document.querySelectorAll(".tab-btn");
+      const tabContents = document.querySelectorAll("[data-tab-content]");
+
+      function activateTab(name) {
+        tabContents.forEach(sec => {
+          sec.classList.toggle("hidden", sec.id !== `tab-${name}`);
+        });
+        tabButtons.forEach(btn => {
+          const target = btn.dataset.tabTarget;
+          const isActive = target === name;
+          if (isActive && target === "plan") {
+            btn.className = "tab-btn flex flex-col items-center justify-center py-1 rounded-3xl transition-all text-pink-500 bg-pink-50 shadow-soft-card";
+          } else if (isActive && target === "guide") {
+            btn.className = "tab-btn flex flex-col items-center justify-center py-1 rounded-3xl transition-all text-sky-500 bg-sky-50 shadow-soft-card";
+          } else if (isActive && target === "wallet") {
+            btn.className = "tab-btn flex flex-col items-center justify-center py-1 rounded-3xl transition-all text-emerald-500 bg-emerald-50 shadow-soft-card";
+          } else if (isActive && target === "lists") {
+            btn.className = "tab-btn flex flex-col items-center justify-center py-1 rounded-3xl transition-all text-violet-500 bg-violet-50 shadow-soft-card";
+          } else if (isActive && target === "info") {
+            btn.className = "tab-btn inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-[0.65rem] font-semibold bg-sky-500 text-white border border-sky-500";
+          } else {
+            // 非當前分頁樣式
+            if (target === "info") {
+              btn.className = "tab-btn inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-[0.65rem] font-semibold bg-sky-100 text-slate-600 border border-sky-200";
+            } else {
+              btn.className = "tab-btn flex flex-col items-center justify-center py-1 rounded-3xl transition-all text-slate-400";
+            }
+          }
+        });
+      }
+
+      tabButtons.forEach(btn => {
+        btn.addEventListener("click", () => {
+          activateTab(btn.dataset.tabTarget);
+        });
+      });
+
+      // 預設顯示 PLAN
+      activateTab("plan");
+    }
+
+    // 判斷重要交通
+    function isImportantTransfer(text) {
+      if (!text) return false;
+      return /自訂交通|搭車約|包車/.test(text);
+    }
+
+    // ===== PLAN render =====
+    function renderPlan() {
+      const container = document.getElementById("plan-container");
+      container.innerHTML = "";
+
+      tripDays.forEach(day => {
+        const card = document.createElement("section");
+        card.className = "bg-white/90 backdrop-blur rounded-3xl shadow-soft-card px-4 sm:px-5 py-4";
+
+        const header = document.createElement("div");
+        header.className = "flex items-start justify-between gap-3 mb-3";
+
+        const left = document.createElement("div");
+        left.className = "flex items-start gap-3";
+
+        const dayBadge = document.createElement("div");
+        dayBadge.className = "flex flex-col items-center mt-0.5";
+        dayBadge.innerHTML = `
+          <div class="flex items-center justify-center w-7 h-7 rounded-full bg-pink-100 text-pink-500 text-xs baloo">
+            ${day.day}
+          </div>
+          <div class="mt-1 text-[0.6rem] text-slate-400 uppercase">DAY</div>
+        `;
+
+        const titleBox = document.createElement("div");
+        titleBox.innerHTML = `
+          <h3 class="text-sm sm:text-base font-semibold text-slate-800 mb-0.5">DAY ${day.day} · ${day.title}</h3>
+          <p class="text-[0.7rem] text-slate-500">${day.note || ""}</p>
+        `;
+
+        left.appendChild(dayBadge);
+        left.appendChild(titleBox);
+        header.appendChild(left);
+
+        const tag = document.createElement("span");
+        tag.className = "hidden sm:inline-flex items-center px-2.5 py-1 rounded-full text-[0.65rem] bg-sky-50 text-sky-600 border border-sky-100";
+        tag.innerHTML = `<i class="fa-solid fa-clock mr-1"></i>一日總覽`;
+        header.appendChild(tag);
+
+        card.appendChild(header);
+
+        // Timeline
+        const timeline = document.createElement("div");
+        timeline.className = "relative pl-4 mt-1 space-y-2 before:absolute before:top-1 before:bottom-1 before:left-[0.65rem] before:w-[2px] before:bg-pink-100";
+
+        day.segments.forEach(seg => {
+          if (seg.type === "transfer") {
+            const wrap = document.createElement("div");
+            const extraClass = isImportantTransfer(seg.text)
+              ? "bg-amber-50 text-amber-700 border-amber-100"
+              : "bg-sky-50 text-slate-600 border-sky-100";
+
+            wrap.className = `relative ml-[-0.65rem] pl-6 pr-3 py-1.5 rounded-full border text-[0.72rem] flex items-center gap-2 ${extraClass}`;
+
+            const dotSmall = document.createElement("div");
+            dotSmall.className = "absolute left-[-0.32rem] top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-white border border-pink-200";
+
+            const icon = document.createElement("i");
+            let iconClass = "";
+
+            if (isImportantTransfer(seg.text)) {
+              iconClass = "fa-solid fa-exclamation-circle text-[0.8rem]";
+            } else {
+              const txt = seg.text || "";
+              if (txt.includes("走路") || txt.includes("步行")) {
+                iconClass = "fa-solid fa-person-walking text-[0.8rem]";
+              } else if (/公車|巴士/.test(txt)) {
+                iconClass = "fa-solid fa-bus text-[0.8rem]";
+              } else if (/火車|電車|JR/.test(txt)) {
+                iconClass = "fa-solid fa-train-subway text-[0.8rem]";
+              } else {
+                iconClass = "fa-solid fa-location-arrow text-[0.8rem]";
+              }
+            }
+            icon.className = iconClass;
+
+            const textSpan = document.createElement("span");
+            textSpan.textContent = seg.text;
+
+            wrap.appendChild(dotSmall);
+            wrap.appendChild(icon);
+            wrap.appendChild(textSpan);
+            timeline.appendChild(wrap);
+          } else {
+            const row = document.createElement("div");
+            row.className = "relative flex gap-3 items-start";
+
+            const dot = document.createElement("div");
+            dot.className = "mt-1 w-3 h-3 rounded-full border-2 border-white bg-gradient-to-br from-pink-400 to-pink-300 shadow";
+
+            const body = document.createElement("div");
+            body.className = "flex-1 bg-slate-50/80 border border-slate-100 rounded-2xl px-3 py-2.5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2";
+
+            const leftInfo = document.createElement("div");
+            leftInfo.className = "flex items-start gap-3";
+
+            const timeBox = document.createElement("div");
+            timeBox.className = "mt-0.5 min-w-[3.2rem]";
+            timeBox.innerHTML = `
+              <div class="text-xs font-semibold text-slate-700">${seg.time || ""}</div>
+            `;
+
+            const textBox = document.createElement("div");
+            textBox.className = "flex-1";
+            const titleLine = document.createElement("div");
+            titleLine.className = "text-xs sm:text-[0.85rem] font-semibold text-slate-800 flex items-center gap-1 flex-wrap";
+            let iconHtml = `<i class="fa-solid fa-location-dot text-pink-400 mr-0.5"></i>`;
+            if (seg.isHotel) {
+              iconHtml = `<i class="fa-solid fa-bed text-sky-400 mr-0.5"></i>`;
+            } else if (seg.isFood) {
+              iconHtml = `<i class="fa-solid fa-utensils text-emerald-400 mr-0.5"></i>`;
+            } else if (seg.isSpot) {
+              iconHtml = `<i class="fa-solid fa-mountain-sun text-orange-400 mr-0.5"></i>`;
+            }
+            titleLine.innerHTML = `${iconHtml}<span>${seg.title}</span>`;
+            const note = document.createElement("p");
+            note.className = "text-[0.7rem] text-slate-500 mt-0.5";
+            note.textContent = seg.note || "";
+
+            textBox.appendChild(titleLine);
+            textBox.appendChild(note);
+
+            leftInfo.appendChild(timeBox);
+            leftInfo.appendChild(textBox);
+
+            const btnBox = document.createElement("div");
+            btnBox.className = "flex flex-wrap gap-1.5 justify-start sm:justify-end";
+
+            const mapBtn = document.createElement("button");
+            mapBtn.type = "button";
+            mapBtn.className = "inline-flex items-center px-2.5 py-1 rounded-full bg-white text-[0.7rem] text-sky-600 border border-sky-100 hover:bg-sky-50";
+            mapBtn.innerHTML = `<i class="fa-solid fa-map-location-dot mr-1"></i>地圖`;
+            mapBtn.addEventListener("click", () => {
+              const q = seg.mapQuery || seg.title;
+              const url = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(q);
+              window.open(url, "_blank");
+            });
+            btnBox.appendChild(mapBtn);
+
+            if (seg.isFood || seg.isSpot) {
+              const blogBtn = document.createElement("button");
+              blogBtn.type = "button";
+              blogBtn.className = "inline-flex items-center px-2.5 py-1 rounded-full bg-pink-50 text-[0.7rem] text-pink-600 border border-pink-100 hover:bg-pink-100";
+              blogBtn.innerHTML = `<i class="fa-solid fa-utensils mr-1"></i>查看食記 / 介紹`;
+              blogBtn.addEventListener("click", () => {
+                const q = seg.title + " 評價 食記";
+                const url = "https://www.google.com/search?q=" + encodeURIComponent(q);
+                window.open(url, "_blank");
+              });
+              btnBox.appendChild(blogBtn);
+            }
+
+            body.appendChild(leftInfo);
+            body.appendChild(btnBox);
+
+            row.appendChild(dot);
+            row.appendChild(body);
+            timeline.appendChild(row);
+          }
+        });
+
+        card.appendChild(timeline);
+        container.appendChild(card);
+      });
+    }
+
+    // ===== WALLET =====
+    const WALLET_KEY = "fukuoka_wallet_items";
+    const RATE_KEY = "fukuoka_wallet_rate";
+
+    let walletItems = [];
+
+    function loadWallet() {
+      try {
+        const stored = localStorage.getItem(WALLET_KEY);
+        walletItems = stored ? JSON.parse(stored) : [];
+      } catch (e) {
+        walletItems = [];
+      }
+
+      const rateInput = document.getElementById("wallet-rate");
+      const rateStored = localStorage.getItem(RATE_KEY);
+      if (rateStored) {
+        rateInput.value = rateStored;
+      }
+
+      renderWalletList();
+    }
+
+    function saveWallet() {
+      localStorage.setItem(WALLET_KEY, JSON.stringify(walletItems));
+    }
+
+    function renderWalletList() {
+      const list = document.getElementById("wallet-list");
+      const summary = document.getElementById("wallet-summary");
+      list.innerHTML = "";
+
+      if (!walletItems.length) {
+        list.innerHTML = `<p class="text-[0.75rem] text-slate-400">目前尚未新增任何記帳，可以從上方表單新增第一筆消費。</p>`;
+        summary.textContent = "";
+        return;
+      }
+
+      const rate = parseFloat(document.getElementById("wallet-rate").value) || 0;
+
+      let totalJpy = 0;
+      let totalTwd = 0;
+
+      walletItems.forEach(item => {
+        totalJpy += item.amount;
+        const twd = rate ? item.amount * rate : 0;
+        totalTwd += twd;
+
+        const row = document.createElement("div");
+        row.className = "flex items-center gap-3 border border-slate-100 rounded-2xl px-2.5 py-2 bg-slate-50/70";
+
+        if (item.thumb) {
+          const img = document.createElement("img");
+          img.src = item.thumb;
+          img.alt = item.name;
+          img.className = "w-10 h-10 rounded-xl object-cover border border-slate-200";
+          row.appendChild(img);
+        } else {
+          const placeholder = document.createElement("div");
+          placeholder.className = "w-10 h-10 rounded-xl bg-gradient-to-br from-sky-100 to-pink-100 flex items-center justify-center text-slate-400 text-xs";
+          placeholder.innerHTML = `<i class="fa-solid fa-receipt"></i>`;
+          row.appendChild(placeholder);
+        }
+
+        const main = document.createElement("div");
+        main.className = "flex-1 min-w-0";
+
+        const title = document.createElement("div");
+        title.className = "text-[0.8rem] font-semibold text-slate-800 truncate";
+        title.textContent = item.name;
+
+        const sub = document.createElement("div");
+        sub.className = "text-[0.7rem] text-slate-500 flex flex-wrap gap-2";
+        const twdText = rate ? ` ≈ NT$ ${twd.toFixed(0)}` : "";
+        sub.textContent = `¥${item.amount.toFixed(0)} ${twdText}`;
+
+        main.appendChild(title);
+        main.appendChild(sub);
+        row.appendChild(main);
+
+        const time = document.createElement("div");
+        time.className = "text-[0.65rem] text-slate-400 text-right";
+        const d = new Date(item.time);
+        time.textContent = `${d.getMonth() + 1}/${d.getDate()} ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+        row.appendChild(time);
+
+        list.appendChild(row);
+      });
+
+      const rateText = rate ? `，約 NT$ ${totalTwd.toFixed(0)}` : "";
+      summary.textContent = `目前累計：約 ¥${totalJpy.toFixed(0)}${rateText}`;
+    }
+
+    function compressImage(file) {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = e => {
+          const img = new Image();
+          img.onload = () => {
+            const maxSize = 420;
+            let { width, height } = img;
+            if (width > height && width > maxSize) {
+              height = height * (maxSize / width);
+              width = maxSize;
+            } else if (height > maxSize) {
+              width = width * (maxSize / height);
+              height = maxSize;
+            }
+            const canvas = document.createElement("canvas");
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext("2d");
+            ctx.drawImage(img, 0, 0, width, height);
+            const dataUrl = canvas.toDataURL("image/jpeg", 0.7);
+            resolve(dataUrl);
+          };
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function setupWalletEvents() {
+      const photoInput = document.getElementById("wallet-photo");
+      const photoName = document.getElementById("wallet-photo-name");
+      photoInput.addEventListener("change", () => {
+        if (photoInput.files && photoInput.files[0]) {
+          photoName.textContent = photoInput.files[0].name;
+        } else {
+          photoName.textContent = "";
+        }
+      });
+
+      const rateInput = document.getElementById("wallet-rate");
+      rateInput.addEventListener("input", () => {
+        localStorage.setItem(RATE_KEY, rateInput.value);
+        renderWalletList();
+      });
+
+      const form = document.getElementById("wallet-form");
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const nameInput = document.getElementById("wallet-item");
+        const amountInput = document.getElementById("wallet-amount");
+        const name = nameInput.value.trim();
+        const amount = parseFloat(amountInput.value);
+
+        if (!name || isNaN(amount)) {
+          alert("請填寫品項與金額。");
+          return;
+        }
+
+        let thumb = null;
+        if (photoInput.files && photoInput.files[0]) {
+          thumb = await compressImage(photoInput.files[0]);
+        }
+
+        walletItems.push({
+          id: Date.now(),
+          name,
+          amount,
+          thumb,
+          time: new Date().toISOString()
+        });
+
+        saveWallet();
+        renderWalletList();
+        form.reset();
+        photoName.textContent = "";
+      });
+
+      document.getElementById("wallet-clear-btn").addEventListener("click", () => {
+        if (!walletItems.length) return;
+        if (confirm("確定要清空所有記帳資料嗎？此動作無法復原。")) {
+          walletItems = [];
+          saveWallet();
+          renderWalletList();
+        }
+      });
+
+      document.getElementById("calc-btn").addEventListener("click", () => {
+        const exprInput = document.getElementById("calc-input");
+        const expr = exprInput.value.trim();
+        const resultEl = document.getElementById("calc-result");
+        if (!expr) {
+          resultEl.textContent = "";
+          return;
+        }
+
+        let value;
+        try {
+          // 單純四則運算
+          // eslint-disable-next-line no-new-func
+          value = Function('"use strict";return (' + expr + ")")();
+          if (typeof value !== "number" || !isFinite(value)) {
+            throw new Error("Invalid");
+          }
+        } catch (e) {
+          alert("算式有誤，請重新確認輸入內容。");
+          return;
+        }
+
+        const rate = parseFloat(rateInput.value) || 0;
+        const twd = rate ? value * rate : null;
+        if (twd != null && rate) {
+          resultEl.textContent = `合計約 ¥${value.toFixed(0)}，換算約 NT$ ${twd.toFixed(0)}（匯率 ${rate}）。`;
+        } else {
+          resultEl.textContent = `合計約 ¥${value.toFixed(0)}。若想顯示台幣金額，請先在上方輸入匯率。`;
+        }
+      });
+    }
+
+    // ===== LISTS =====
+    const CHECKLIST_KEY = "fukuoka_checklist";
+    const MEMO_KEY = "fukuoka_memo";
+
+    let checklistItems = [];
+
+    function loadChecklist() {
+      try {
+        const stored = localStorage.getItem(CHECKLIST_KEY);
+        if (stored) {
+          checklistItems = JSON.parse(stored);
+        } else {
+          checklistItems = [
+            { id: 1, text: "護照 & 身分證", checked: false },
+            { id: 2, text: "機票 / 電子登機證", checked: false },
+            { id: 3, text: "手機網卡 / Wi-Fi 分享器", checked: false },
+            { id: 4, text: "日圓現金與主要信用卡", checked: false },
+            { id: 5, text: "住宿預訂資料（訂房編號、地址）", checked: false },
+            { id: 6, text: "旅遊保險與緊急聯絡方式", checked: false },
+            { id: 7, text: "常備藥品與個人醫療用品", checked: false },
+            { id: 8, text: "行程表與景點門票 QR code", checked: false }
+          ];
+        }
+      } catch (e) {
+        checklistItems = [];
+      }
+      renderChecklist();
+    }
+
+    function saveChecklist() {
+      localStorage.setItem(CHECKLIST_KEY, JSON.stringify(checklistItems));
+    }
+
+    function renderChecklist() {
+      const container = document.getElementById("checklist-container");
+      container.innerHTML = "";
+      checklistItems.forEach(item => {
+        const row = document.createElement("label");
+        row.className = "flex items-start gap-2 px-2 py-1.5 rounded-xl hover:bg-slate-50 cursor-pointer text-[0.8rem]";
+
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.className = "mt-0.5 w-4 h-4 rounded border-slate-300 text-pink-500 focus:ring-pink-200";
+        checkbox.checked = item.checked;
+        checkbox.addEventListener("change", () => {
+          item.checked = checkbox.checked;
+          saveChecklist();
+        });
+
+        const text = document.createElement("span");
+        text.textContent = item.text;
+        if (item.checked) {
+          text.className = "line-through text-slate-400";
+        }
+
+        row.appendChild(checkbox);
+        row.appendChild(text);
+        container.appendChild(row);
+      });
+    }
+
+    function loadMemo() {
+      const memoInput = document.getElementById("memo-input");
+      const stored = localStorage.getItem(MEMO_KEY);
+      if (stored) memoInput.value = stored;
+      renderMemoPreview();
+    }
+
+    function saveMemo() {
+      const memoInput = document.getElementById("memo-input");
+      localStorage.setItem(MEMO_KEY, memoInput.value);
+    }
+
+    function linkify(text) {
+      const urlRegex = /(https?:\/\/[^\s]+)/g;
+      return text.replace(urlRegex, function (url) {
+        const safeUrl = url.replace(/"/g, "");
+        return `<a href="${safeUrl}" target="_blank"
+                  class="inline-flex items-center px-2 py-0.5 mt-0.5 rounded-full bg-sky-50 text-sky-600 border border-sky-100 text-[0.75rem] hover:bg-sky-100">
+                  <i class="fa-solid fa-link mr-1"></i>${safeUrl}</a>`;
+      });
+    }
+
+    function renderMemoPreview() {
+      const memoInput = document.getElementById("memo-input");
+      const preview = document.getElementById("memo-preview");
+      const raw = memoInput.value || "";
+      if (!raw.trim()) {
+        preview.innerHTML = `<p class="text-[0.75rem] text-slate-400">目前沒有備忘內容，可以先在上方輸入待辦事項、喜歡的店家或網址。</p>`;
+        return;
+      }
+      const escaped = raw.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+      const withLinks = linkify(escaped);
+      preview.innerHTML = withLinks.replace(/\n/g, "<br>");
+    }
+
+    function setupListsEvents() {
+      const memoInput = document.getElementById("memo-input");
+      memoInput.addEventListener("input", () => {
+        saveMemo();
+        renderMemoPreview();
+      });
+    }
+
+    // ===== INIT =====
+    document.addEventListener("DOMContentLoaded", () => {
+      setupTabs();
+      renderPlan();
+
+      loadWallet();
+      setupWalletEvents();
+
+      loadChecklist();
+      loadMemo();
+      setupListsEvents();
+    });
+  </script>
+</body>
+</html>
